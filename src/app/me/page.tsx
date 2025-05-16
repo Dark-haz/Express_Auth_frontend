@@ -59,9 +59,11 @@ export default function MePage() {
   if (!user) return <p>Loading...</p>;
 
   return (
-    <div>
-      <h2>Welcome, {user.username}</h2>
-      <p>User ID: {user.id}</p>
+    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+      <div className="bg-gray-800 p-6 rounded shadow-md w-full max-w-sm text-center">
+        <h2 className="text-2xl font-bold mb-2">Welcome, {user.username}</h2>
+        <p className="text-gray-400">User ID: {user.id}</p>
+      </div>
     </div>
   );
 }

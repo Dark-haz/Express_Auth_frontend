@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import axios, { AxiosResponse } from 'axios';
+import { useRouter } from 'next/navigation';
 
 interface User {
   id: string;
@@ -21,6 +22,8 @@ interface ApiResponse<T> {
 }
 
 export default function Login() {
+  const router = useRouter();
+
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [user, setUser] = useState<User | null>(null);
@@ -46,6 +49,8 @@ export default function Login() {
       setUser(user);
       setError(null);
 
+      router.push('/me');
+
     } catch (err:any) {
       console.error(err);
       
@@ -60,23 +65,36 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <input
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={login}>Login</button>
+    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+      <div className="w-full max-w-sm p-8 bg-gray-800 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        <div className="space-y-4">
+          <input
+            type="text"
+            placeholder="Username"
+            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button
+            onClick={login}
+            className="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded font-semibold transition-colors"
+          >
+            Login
+          </button>
+        </div>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {user && <div>Welcome, {user.username} (ID: {user.id})</div>}
+        {error && (
+          <p className="mt-4 text-red-400 text-sm text-center">{error}</p>
+        )}
+      </div>
     </div>
   );
 }
