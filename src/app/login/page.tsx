@@ -1,8 +1,12 @@
 "use client";
 
-import { useState } from 'react';
-import axios, { AxiosResponse } from 'axios';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import axios, { AxiosResponse } from "axios";
+import { useRouter } from "next/navigation";
+
+// Import static base URL and ApiResponse type only
+import { API_BASE_URL } from "../lib/constants";
+import { ApiResponse } from "../lib/types";
 
 interface User {
   id: string;
@@ -14,52 +18,43 @@ interface LoginResult {
   user: User;
 }
 
-interface ApiResponse<T> {
-  isSuccess: boolean;
-  errorMessages: string[];
-  statusCode: number;
-  result?: T;
-}
-
 export default function Login() {
   const router = useRouter();
 
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const login = async () => {
     try {
       const res: AxiosResponse<ApiResponse<LoginResult>> = await axios.post(
-        'http://localhost:5000/api/auth/login',
+        `${API_BASE_URL}/auth/login`,
         { username, password }
       );
 
       const data = res.data;
 
       if (!data.isSuccess || !data.result) {
-        setError(data.errorMessages.join(', ') || 'Login failed');
+        setError(data.errorMessages.join(", ") || "Login failed");
         return;
       }
 
       const { token, user } = data.result;
-      // Optionally: store token in localStorage
-      localStorage.setItem('token', token);
+      localStorage.setItem("token", token);
       setUser(user);
       setError(null);
 
-      router.push('/me');
-
-    } catch (err:any) {
+      router.push("/me");
+    } catch (err: any) {
       console.error(err);
-      
+
       if (err.response && err.response.data) {
         const errorData: ApiResponse<null> = err.response.data;
-        const msg = errorData.errorMessages.join(', ') || 'Login failed';
+        const msg = errorData.errorMessages.join(", ") || "Login failed";
         setError(msg);
       } else {
-        setError('Something went wrong. Please try again.');
+        setError("Something went wrong. Please try again.");
       }
     }
   };

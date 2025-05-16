@@ -1,8 +1,12 @@
 "use client";
 
-import { useState } from 'react';
-import axios, { AxiosResponse } from 'axios';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import axios, { AxiosResponse } from "axios";
+import { useRouter } from "next/navigation";
+
+// Import base URL and ApiResponse from your constants/types files (adjust paths accordingly)
+import { API_BASE_URL } from "../lib/constants";
+import { ApiResponse } from "../lib/types";
 
 interface User {
   id: string;
@@ -14,50 +18,42 @@ interface RegisterResult {
   user: User;
 }
 
-interface ApiResponse<T> {
-  isSuccess: boolean;
-  errorMessages: string[];
-  statusCode: number;
-  result?: T;
-}
-
 export default function Register() {
   const router = useRouter();
 
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const register = async () => {
     try {
       const res: AxiosResponse<ApiResponse<RegisterResult>> = await axios.post(
-        'http://localhost:5000/api/auth/register',
+        `${API_BASE_URL}/auth/register`,
         { username, password }
       );
 
       const data = res.data;
 
       if (!data.isSuccess || !data.result) {
-        setError(data.errorMessages.join(', ') || 'Registration failed');
+        setError(data.errorMessages.join(", ") || "Registration failed");
         return;
       }
 
       const { token, user } = data.result;
-      localStorage.setItem('token', token);
+      localStorage.setItem("token", token);
       setUser(user);
       setError(null);
-      router.push('/me');
-
+      router.push("/me");
     } catch (err: any) {
       console.error(err);
 
       if (err.response && err.response.data) {
         const errorData: ApiResponse<null> = err.response.data;
-        const msg = errorData.errorMessages.join(', ') || 'Registration failed';
+        const msg = errorData.errorMessages.join(", ") || "Registration failed";
         setError(msg);
       } else {
-        setError('Something went wrong. Please try again.');
+        setError("Something went wrong. Please try again.");
       }
     }
   };

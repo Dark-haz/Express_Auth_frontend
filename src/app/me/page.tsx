@@ -1,19 +1,14 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { API_BASE_URL } from "../lib/constants";
+import { ApiResponse } from "../lib/types";
 
 interface User {
   id: string;
   username: string;
-}
-
-interface ApiResponse<T> {
-  isSuccess: boolean;
-  errorMessages: string[];
-  statusCode: number;
-  result?: T;
 }
 
 export default function MePage() {
@@ -22,41 +17,45 @@ export default function MePage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     if (!token) {
-      router.push('/login');
+      router.push("/login");
       return;
     }
 
     const fetchUser = async () => {
       try {
-        const res = await axios.get<ApiResponse<User>>('http://localhost:5000/api/auth/me', {
-          headers: {
-            'x-auth-token': token,
-          },
-        });
+        const res = await axios.get<ApiResponse<User>>(
+          `${API_BASE_URL}/auth/me`,
+          {
+            headers: {
+              "x-auth-token": token,
+            },
+          }
+        );
 
         const data = res.data;
 
         if (!data.isSuccess || !data.result) {
-          setError(data.errorMessages.join(', ') || 'Could not fetch user');
+          setError(data.errorMessages.join(", ") || "Could not fetch user");
           return;
         }
 
         setUser(data.result);
       } catch (err: any) {
         console.error(err);
-        setError('Not authorized or session expired.');
-        router.push('/login');
+        setError("Not authorized or session expired.");
+        router.push("/login");
       }
     };
 
     fetchUser();
   }, [router]);
 
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
-  if (!user) return <p>Loading...</p>;
+  if (error) return <p className="text-red-400 text-center mt-4">{error}</p>;
+  if (!user)
+    return <p className="text-gray-300 text-center mt-4">Loading...</p>;
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
