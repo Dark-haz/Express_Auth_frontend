@@ -36,7 +36,7 @@ export default function Login() {
       const data = res.data;
 
       if (!data.isSuccess || !data.result) {
-        setError(data.errorMessages.join(", ") || "Login failed");
+        setError(data.errorMessages.join("\n") || "Login failed");
         return;
       }
 
@@ -51,7 +51,7 @@ export default function Login() {
 
       if (err.response && err.response.data) {
         const errorData: ApiResponse<null> = err.response.data;
-        const msg = errorData.errorMessages.join(", ") || "Login failed";
+        const msg = errorData.errorMessages.join("\n") || "Login failed";
         setError(msg);
       } else {
         setError("Something went wrong. Please try again.");
@@ -86,9 +86,16 @@ export default function Login() {
           </button>
         </div>
 
+        <p className="mt-4 text-center text-sm text-gray-400">
+  Don't have an account?{' '}
+  <a href="/register" className="text-blue-500 hover:underline">
+    Register here
+  </a>
+</p>
+
         {error && (
-          <p className="mt-4 text-red-400 text-sm text-center">{error}</p>
-        )}
+  <pre className="mt-4 text-red-400 text-sm text-center whitespace-pre-wrap">{error}</pre>        
+  )}
       </div>
     </div>
   );

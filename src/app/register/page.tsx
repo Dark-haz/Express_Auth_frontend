@@ -36,7 +36,7 @@ export default function Register() {
       const data = res.data;
 
       if (!data.isSuccess || !data.result) {
-        setError(data.errorMessages.join(", ") || "Registration failed");
+        setError(data.errorMessages.join("\n") || "Registration failed");
         return;
       }
 
@@ -50,7 +50,7 @@ export default function Register() {
 
       if (err.response && err.response.data) {
         const errorData: ApiResponse<null> = err.response.data;
-        const msg = errorData.errorMessages.join(", ") || "Registration failed";
+        const msg = errorData.errorMessages.join("\n") || "Registration failed";
         setError(msg);
       } else {
         setError("Something went wrong. Please try again.");
@@ -85,9 +85,16 @@ export default function Register() {
           </button>
         </div>
 
+        <p className="mt-4 text-center text-sm text-gray-400">
+  Already have an account?{' '}
+  <a href="/login" className="text-blue-500 hover:underline">
+    Login here
+  </a>
+</p>
+
         {error && (
-          <p className="mt-4 text-red-400 text-sm text-center">{error}</p>
-        )}
+  <pre className="mt-4 text-red-400 text-sm text-center whitespace-pre-wrap">{error}</pre>        
+  )}
       </div>
     </div>
   );
